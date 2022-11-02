@@ -8,11 +8,11 @@
 import Foundation
 
 @propertyWrapper
-struct AnyFormatDate: Decodable {
+public struct AnyFormatDate: Decodable {
     
-    let wrappedValue: Date
+    public let wrappedValue: Date
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let decodedString = try container.decode(String.self)
         
