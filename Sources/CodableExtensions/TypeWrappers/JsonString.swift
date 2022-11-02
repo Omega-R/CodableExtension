@@ -16,12 +16,6 @@ public struct JsonString<T: Decodable>: Decodable {
         let container = try decoder.singleValueContainer()
         let jsonString = try container.decode(String.self)
         let jsonData = Data(jsonString.utf8)
-        let jsonDecoder = JSONDecoder()
-        
-        if let decodedObject = try? jsonDecoder.decode(T.self, from: jsonData) {
-            wrappedValue = decodedObject
-        } else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown object to parce in \(jsonString)")
-        }
+        wrappedValue = try JSONDecoder().decode(T.self, from: jsonData)
     }
 }
