@@ -53,12 +53,26 @@ public extension KeyedDecodingContainer {
         return decimal.doubleValue
     }
     
-    // MARK: - Decoding Json String
+    // MARK: - Decoding Bool
     
-    func decode<T: Decodable>(_ type: String.Type, forKey key: Key) throws -> T {
-        let jsonString = try decode(type, forKey: key)
-        let jsonData = Data(jsonString.utf8)
-        let wrappedObject = try JSONDecoder().decode(T.self, from: jsonData)
-        return wrappedObject
+    func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
+        if let decodedValue = try? decodeIfPresent(type, forKey: key) {
+            return decodedValue
+        }
+        
+        let stringValue = try? decodeIfPresent(String.self, forKey: key)
+        let intValue = try? decodeIfPresent(Int.self, forKey: key)
+        let result = stringValue.map(Int.init) ?? intValue
+        
+        switch result {
+        case 0:
+            return false
+        case 1:
+            return true
+        case .none:
+            return false
+        default:
+            throw DecodingError.dataCorruptedError(forKey: key, in: self, debugDescription: "Expected `0` or `1` but received `\(result!.description)`")
+        }
     }
 }
