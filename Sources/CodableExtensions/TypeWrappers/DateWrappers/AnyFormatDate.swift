@@ -16,7 +16,7 @@ public struct AnyFormatDate: Decodable {
         let container = try decoder.singleValueContainer()
         let decodedString = try container.decode(String.self)
         
-        if let date = DateFormat.date(from: decodedString) {
+        if let date = DateConverter.date(from: decodedString) {
             wrappedValue = date
         } else {
             throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported date format: `\(decoder.codingPath)`")
