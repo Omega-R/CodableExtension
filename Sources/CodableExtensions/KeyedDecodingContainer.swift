@@ -42,6 +42,23 @@ public extension KeyedDecodingContainer {
         return decimal.floatValue
     }
     
+    // MARK: - Decode Decimal
+    
+    private func decodeDecimal<T: Decodable>(_ type: T.Type, forKey key: Key) throws -> NSDecimalNumber {
+        let stringValue = try decode(String.self, forKey: key)
+        let decimal = NSDecimalNumber(string: stringValue)
+        
+        if decimal == .notANumber {
+            throw DecodingError.dataCorruptedError(
+                forKey: key,
+                in: self,
+                debugDescription: "Expected `\(type)` but received `\(stringValue)`"
+            )
+        }
+        
+        return decimal
+    }
+    
     // MARK: - Decoding Bool
     
     func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
@@ -73,6 +90,27 @@ public extension KeyedDecodingContainer {
         }
         
         let stringValue = try decode(String.self, forKey: key)
+        
+        let date = try decodeDate(stringValue, forKey: key)
+        return date
+    }
+    
+    // MARK: - Decode Optional Date
+    
+//    func decode(_ type: Optional<Date>.Type, forKey key: Key) throws -> Date? {
+//        if let decodedValue = try? decodeIfPresent(type, forKey: key) {
+//            return decodedValue
+//        }
+//
+//        guard let stringValue = try? decode(String.self, forKey: key), !stringValue.isEmpty else {
+//            return nil
+//        }
+//
+//        let date = try decodeDate(stringValue, forKey: key)
+//        return date
+//    }
+    
+    private func decodeDate(_ stringValue: String, forKey key: Key) throws -> Date {
         if let date = DateConverter.date(from: stringValue) {
             return date
         }
@@ -82,22 +120,5 @@ public extension KeyedDecodingContainer {
             in: self,
             debugDescription: "Unsupported date format: `\(stringValue)`"
         )
-    }
-    
-    // MARK: - Decode Decimal
-    
-    private func decodeDecimal<T: Decodable>(_ type: T.Type, forKey key: Key) throws -> NSDecimalNumber {
-        let stringValue = try decode(String.self, forKey: key)
-        let decimal = NSDecimalNumber(string: stringValue)
-        
-        if decimal == .notANumber {
-            throw DecodingError.dataCorruptedError(
-                forKey: key,
-                in: self,
-                debugDescription: "Expected `\(type)` but received `\(stringValue)`"
-            )
-        }
-        
-        return decimal
     }
 }
