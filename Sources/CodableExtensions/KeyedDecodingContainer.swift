@@ -97,18 +97,18 @@ public extension KeyedDecodingContainer {
     
     // MARK: - Decode Optional Date
     
-//    func decode(_ type: Optional<Date>.Type, forKey key: Key) throws -> Date? {
-//        if let decodedValue = try? decodeIfPresent(type, forKey: key) {
-//            return decodedValue
-//        }
-//
-//        guard let stringValue = try? decode(String.self, forKey: key), !stringValue.isEmpty else {
-//            return nil
-//        }
-//
-//        let date = try decodeDate(stringValue, forKey: key)
-//        return date
-//    }
+    func decodeIfPresent(_ type: Date.Type, forKey key: Key) throws -> Date? {
+        if let decodedValue = try? decode(type, forKey: key) {
+            return decodedValue
+        }
+        
+        guard let stringValue = try? decode(String.self, forKey: key), !stringValue.isEmpty else {
+            return nil
+        }
+        
+        let date = try decodeDate(stringValue, forKey: key)
+        return date
+    }
     
     private func decodeDate(_ stringValue: String, forKey key: Key) throws -> Date {
         if let date = DateConverter.date(from: stringValue) {
