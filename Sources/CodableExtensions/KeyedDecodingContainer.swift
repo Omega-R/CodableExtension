@@ -65,6 +65,27 @@ public extension KeyedDecodingContainer {
         }
     }
     
+    // MARK: - Decode Date
+    
+    func decode(_ type: Date.Type, forKey key: Key) throws -> Date {
+        if let decodedValue = try? decodeIfPresent(type, forKey: key) {
+            return decodedValue
+        }
+        
+        let stringValue = try decode(String.self, forKey: key)
+        if let date = DateConverter.date(from: stringValue) {
+            return date
+        }
+        
+        throw DecodingError.dataCorruptedError(
+            forKey: key,
+            in: self,
+            debugDescription: "Unsupported date format: `\(stringValue)`"
+        )
+    }
+    
+    // MARK: - Decode Decimal
+    
     private func decodeDecimal<T: Decodable>(_ type: T.Type, forKey key: Key) throws -> NSDecimalNumber {
         let stringValue = try decode(String.self, forKey: key)
         let decimal = NSDecimalNumber(string: stringValue)
