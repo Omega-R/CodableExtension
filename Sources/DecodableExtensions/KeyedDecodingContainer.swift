@@ -85,23 +85,20 @@ public extension KeyedDecodingContainer {
     // MARK: - Decode Date
     
     func decode(_ type: Date.Type, forKey key: Key) throws -> Date {
-        if let decodedValue = try? decodeIfPresent(type, forKey: key) {
+        if let decodedValue = try decodeIfPresent(type, forKey: key) {
             return decodedValue
         }
-        
         let stringValue = try decode(String.self, forKey: key)
-        
-        let date = try decodeDate(stringValue, forKey: key)
-        return date
+        throw DecodingError.dataCorruptedError(
+            forKey: key,
+            in: self,
+            debugDescription: "Unsupported date format: `\(stringValue)`"
+        )
     }
     
     // MARK: - Decode Optional Date
     
     func decodeIfPresent(_ type: Date.Type, forKey key: Key) throws -> Date? {
-        if let decodedValue = try? decode(type, forKey: key) {
-            return decodedValue
-        }
-        
         guard let stringValue = try? decode(String.self, forKey: key), !stringValue.isEmpty else {
             return nil
         }
